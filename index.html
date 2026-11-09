@@ -3,52 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Xưởng Kiến Trúc - Đăng ký thiết bị</title>
-  <!-- Tải Tailwind CSS để hiển thị giao diện -->
+  <title>BỘ MÔN KIẾN TRÚC · XƯỞNG THỰC HÀNH & THIẾT KẾ KIẾN TRÚC</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tải React và Babel để chạy trực tiếp trên trình duyệt -->
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Tải Font chữ chuyên ngành -->
-  <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
-    h1, h2, .font-serif { font-family: 'Merriweather', serif; }
+    h1, h2, h3, .font-serif { font-family: 'Merriweather', serif; }
   </style>
 </head>
-<body class="bg-[#FBF9F5] text-slate-800">
+<body class="bg-[#FCFAF6] text-slate-800">
   <div id="root"></div>
 
-  <!-- Toàn bộ mã nguồn App.jsx được nhúng vào đây -->
   <script type="text/babel">
     const { useState } = React;
 
-    // Component chính
     function ArchitectureEquipmentSystem() {
       const [activeTab, setActiveTab] = useState('muon');
       const [role, setRole] = useState('giang_vien');
       const [selectedEquipments, setSelectedEquipments] = useState([]);
       const [needAssistant, setNeedAssistant] = useState(false);
-      const [borrowHistory, setBorrowHistory] = useState([
+
+      // Danh mục thiết bị chuẩn theo xưởng
+      const [equipmentCatalog, setEquipmentCatalog] = useState([
         {
-          id: 1,
-          teacherName: 'TS. Nguyễn Văn A',
-          subject: 'Vật lý kiến trúc 2',
-          studentClass: '22KT1',
-          date: '2026-11-12',
-          shift: 'Sáng',
-          equipments: ['Máy đo ánh sáng', 'Máy đo tốc độ gió'],
-          status: 'Đã xác nhận'
+          category: 'CHẾ TÁC VÀ MÔ HÌNH',
+          items: [
+            { id: 'laser_craft', name: 'Máy cắt mô hình Laser Craft', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' }
+          ]
+        },
+        {
+          category: 'ĐO ĐẠC VÀ KIỂM TRA MÔI TRƯỜNG',
+          items: [
+            { id: 'lux_meter', name: 'Máy đo ánh sáng', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
+            { id: 'wind_speed', name: 'Máy đo tốc độ gió', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
+            { id: 'datalogger_temp_rh', name: 'Bộ ghi dữ liệu nhiệt độ, độ ẩm, áp suất', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
+            { id: 'temp_logger', name: 'Máy đo ghi nhiệt độ', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
+            { id: 'solar_rad', name: 'Máy đo bức xạ nhiệt độ mặt trời', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
+            { id: 'sound_meter', name: 'Máy đo độ ồn', disabled: false, note: '' },
+            { id: 'laser_dist', name: 'Máy đo khoảng cách laser', disabled: false, note: '' }
+          ]
+        },
+        {
+          category: 'GHI HÌNH',
+          items: [
+            { id: 'flycam', name: 'Máy quay Flycam', disabled: false, note: '' }
+          ]
+        },
+        {
+          category: 'DỤNG CỤ HỖ TRỢ KHÁC',
+          items: [
+            { id: 'color_printer', name: 'Máy in màu', disabled: false, note: '' },
+            { id: 'projector', name: 'Máy chiếu', disabled: false, note: '' },
+            { id: 'desktop_pc', name: 'Máy tính để bàn', disabled: false, note: '' }
+          ]
         }
       ]);
 
-      const [proposals, setProposals] = useState([]);
+      const [borrowHistory, setBorrowHistory] = useState([]);
       const [formData, setFormData] = useState({
         teacherName: '',
         subject: '',
         studentClass: '',
-        usageDate: '2026-11-15',
+        usageDate: '2026-11-09',
         shift: 'Sáng',
         purpose: ''
       });
@@ -65,43 +84,6 @@
         url: ''
       });
 
-      const equipmentCatalog = [
-        {
-          category: 'CHẾ TÁC VÀ MÔ HÌNH',
-          items: [
-            { id: 'laser', name: 'Máy cắt mô hình Laser Craft', disabled: true, note: 'Hư hoặc lâu không sử dụng, chưa cho mượn' },
-            { id: 'foam_proxxon', name: 'Bàn cắt xốp nhiệt Proxxon', disabled: false }
-          ]
-        },
-        {
-          category: 'ĐO ĐẠC VÀ KIỂM TRA MÔI TRƯỜNG',
-          items: [
-            { id: 'lux_meter', name: 'Máy đo ánh sáng (Lux meter)', disabled: false },
-            { id: 'wind_speed', name: 'Máy đo tốc độ gió', disabled: false },
-            { id: 'datalogger_temp_rh', name: 'Bộ ghi dữ liệu nhiệt độ, độ ẩm, áp suất', disabled: false },
-            { id: 'temp_logger', name: 'Máy đo ghi nhiệt độ', disabled: false },
-            { id: 'solar_rad', name: 'Máy đo bức xạ nhiệt độ mặt trời', disabled: false },
-            { id: 'sound_meter', name: 'Máy đo độ ồn', disabled: false },
-            { id: 'laser_dist', name: 'Máy đo khoảng cách laser', disabled: false }
-          ]
-        },
-        {
-          category: 'GHI HÌNH',
-          items: [
-            { id: 'flycam', name: 'Máy quay Flycam', disabled: false },
-            { id: 'canon_fisheye', name: 'Canon 6D + Sigma 15mm Fisheye (Đo SVF)', disabled: false }
-          ]
-        },
-        {
-          category: 'DỤNG CỤ HỖ TRỢ KHÁC',
-          items: [
-            { id: 'color_printer', name: 'Máy in màu', disabled: false },
-            { id: 'projector', name: 'Máy chiếu', disabled: false },
-            { id: 'desktop_pc', name: 'Máy tính để bàn', disabled: false }
-          ]
-        }
-      ];
-
       const toggleEquip = (name, disabled) => {
         if (disabled) return;
         if (selectedEquipments.includes(name)) {
@@ -114,7 +96,7 @@
       const handleBorrowSubmit = (e) => {
         e.preventDefault();
         if (role === 'sinh_vien') {
-          alert('Chỉ Giảng viên mới được phép đăng ký mượn thiết bị!');
+          alert('Chỉ Giảng viên mới có quyền đăng ký mượn thiết bị!');
           return;
         }
         if (selectedEquipments.length === 0) {
@@ -130,149 +112,151 @@
           date: formData.usageDate,
           shift: formData.shift,
           equipments: [...selectedEquipments],
+          needAssistant: needAssistant,
           status: 'Chờ duyệt'
         };
 
         setBorrowHistory([newRecord, ...borrowHistory]);
-        alert('Đã gửi đơn mượn thành công!');
+        alert('Đã gửi phiếu đăng ký sử dụng thiết bị thành công!');
         setSelectedEquipments([]);
       };
 
       const handleProposalSubmit = (e) => {
         e.preventDefault();
-        const newProp = {
-          id: Date.now(),
-          ...propData,
-          status: 'Chờ xem xét'
-        };
-        setProposals([newProp, ...proposals]);
-        alert('Đã gửi đề xuất mua sắm thành công!');
-      };
-
-      const updateStatus = (id, newStatus) => {
-        setBorrowHistory(borrowHistory.map(item => item.id === id ? { ...item, status: newStatus } : item));
-      };
-
-      const deleteRecord = (id) => {
-        if (confirm('Bạn có chắc chắn muốn xóa lượt đăng ký này?')) {
-          setBorrowHistory(borrowHistory.filter(item => item.id !== id));
-        }
+        alert('Đã gửi đề xuất mua sắm cho bộ môn thành công!');
+        setPropData({
+          teacherName: '',
+          subject: '',
+          name: '',
+          category: 'Thiết bị',
+          priority: 'Trung bình',
+          quantity: 1,
+          price: '',
+          reason: '',
+          url: ''
+        });
       };
 
       return (
-        <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+        <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-6 border-b border-stone-200 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-5 border-b border-[#E6E1D8] gap-4">
             <div>
-              <p className="text-xs uppercase tracking-wider font-semibold text-stone-500">
+              <p className="text-[11px] tracking-widest font-semibold text-stone-500 uppercase">
                 BỘ MÔN KIẾN TRÚC · XƯỞNG THỰC HÀNH & THIẾT KẾ KIẾN TRÚC
               </p>
-              <h1 className="text-3xl font-bold text-slate-900 mt-1">
+              <h1 className="text-3xl font-bold text-[#142A38] mt-1">
                 Đăng ký thiết bị và đề xuất mua sắm
               </h1>
               <p className="text-stone-600 text-sm mt-1">
                 Giảng viên đăng ký lịch dùng thiết bị trước mỗi buổi thực hành, hoặc gửi gợi ý thiết bị, phần mềm cần mua cho học phần của mình.
               </p>
+              <p className="text-xs text-stone-400 mt-2">
+                {role === 'admin' 
+                  ? 'Bạn đang xem với quyền quản lý: có nút Xác nhận, Từ chối, Xóa và tải CSV.' 
+                  : 'Bạn đang xem với quyền đăng ký học phần.'}
+              </p>
             </div>
 
-            {/* Bộ đổi quyền */}
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2 text-xs">
-              <span className="font-semibold block text-amber-900 mb-1">Vai trò hiển thị:</span>
+            {/* Chuyển đổi vai trò người xem */}
+            <div className="bg-[#F3EFE6] border border-[#DDD6C8] rounded-lg p-2 text-xs">
+              <span className="font-semibold block text-stone-700 mb-1">Chế độ người dùng:</span>
               <select 
                 value={role} 
                 onChange={(e) => setRole(e.target.value)}
-                className="bg-white border border-amber-300 rounded px-2 py-1 font-medium text-slate-700 outline-none"
+                className="bg-white border border-stone-300 rounded px-2 py-1 font-medium text-slate-700 outline-none"
               >
-                <option value="giang_vien">Giảng viên (Được mượn)</option>
-                <option value="admin">Quản lý (Duyệt/Xóa/Xuất CSV)</option>
+                <option value="giang_vien">Giảng viên (Được đăng ký)</option>
+                <option value="admin">Quản trị viên (Duyệt/Xóa)</option>
                 <option value="sinh_vien">Sinh viên (Chỉ xem lịch)</option>
               </select>
             </div>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex gap-8 border-b border-stone-200 mt-6 mb-8 text-base font-semibold">
+          <div className="flex gap-8 border-b border-[#E6E1D8] mt-4 mb-7 text-sm font-semibold">
             <button
               onClick={() => setActiveTab('muon')}
-              className={`pb-3 transition-colors relative ${activeTab === 'muon' ? 'text-slate-900 border-b-2 border-[#1E4E68]' : 'text-stone-500 hover:text-stone-800'}`}
+              className={`pb-3 transition-colors ${activeTab === 'muon' ? 'text-[#1E4E68] border-b-2 border-[#1E4E68]' : 'text-stone-500 hover:text-stone-800'}`}
             >
               Đăng ký mượn thiết bị
             </button>
             <button
               onClick={() => setActiveTab('dexuat')}
-              className={`pb-3 transition-colors relative ${activeTab === 'dexuat' ? 'text-slate-900 border-b-2 border-[#1E4E68]' : 'text-stone-500 hover:text-stone-800'}`}
+              className={`pb-3 transition-colors ${activeTab === 'dexuat' ? 'text-[#1E4E68] border-b-2 border-[#1E4E68]' : 'text-stone-500 hover:text-stone-800'}`}
             >
               Đề xuất mua sắm
             </button>
           </div>
 
-          {/* TAB 1: FORM MƯỢN */}
+          {/* TAB 1: FORM MƯỢN THIẾT BỊ */}
           {activeTab === 'muon' && (
             <div>
               {role === 'sinh_vien' ? (
-                <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg text-sm mb-6">
-                  <strong>Thông báo:</strong> Sinh viên không có quyền đăng ký mượn thiết bị trực tiếp. Vui lòng liên hệ giảng viên phụ trách học phần.
+                <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded text-sm mb-6">
+                  Trang web chỉ cho phép giảng viên gửi đơn mượn thiết bị. Sinh viên xem lịch đăng ký bên dưới.
                 </div>
               ) : (
-                <form onSubmit={handleBorrowSubmit} className="space-y-6 bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+                <form onSubmit={handleBorrowSubmit} className="space-y-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Họ tên giảng viên *</label>
+                      <label className="block text-xs font-bold text-stone-700 mb-1">Họ tên giảng viên</label>
                       <input 
                         type="text" 
                         required
-                        placeholder="Ví dụ: TS. Nguyễn Văn A"
                         value={formData.teacherName}
                         onChange={(e) => setFormData({...formData, teacherName: e.target.value})}
-                        className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-[#1E4E68] outline-none"
+                        className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none focus:border-[#1E4E68]"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Học phần *</label>
+                      <label className="block text-xs font-bold text-stone-700 mb-1">Học phần</label>
                       <input 
                         type="text" 
                         required
                         placeholder="Ví dụ: Vật lý kiến trúc 2"
                         value={formData.subject}
                         onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                        className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-[#1E4E68] outline-none"
+                        className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none focus:border-[#1E4E68]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Lớp</label>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Lớp</label>
                     <input 
                       type="text" 
                       placeholder="Ví dụ: 24KT1"
                       value={formData.studentClass}
                       onChange={(e) => setFormData({...formData, studentClass: e.target.value})}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-[#1E4E68] outline-none"
+                      className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none focus:border-[#1E4E68]"
                     />
                   </div>
 
-                  {/* Danh sách thiết bị */}
+                  {/* Danh mục thiết bị */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Thiết bị cần dùng (chọn một hoặc nhiều)</label>
-                    <div className="p-3 bg-amber-50/70 border border-amber-100 rounded text-xs text-amber-900 mb-4">
-                      Một số thiết bị đang hư hoặc lâu không sử dụng nên chưa thể đăng ký (các ô màu xám). Nếu học phần của thầy cô cần dùng, xin gửi ở tab Đề xuất mua sắm.
+                    <label className="block text-xs font-bold text-stone-700 mb-1">
+                      Thiết bị cần dùng <span className="font-normal text-stone-500">(chọn một hoặc nhiều)</span>
+                    </label>
+                    <div className="p-3 bg-[#F4EFE6] border-l-4 border-amber-600 text-xs text-stone-700 mb-4">
+                      Một số thiết bị đang hư hoặc lâu không sử dụng nên chưa thể đăng ký (các ô màu xám). Nếu học phần của thầy cô cần dùng hoặc cần sửa chữa, thay thế các thiết bị này, xin gửi ở tab Đề xuất mua sắm.
                     </div>
 
                     <div className="space-y-4">
                       {equipmentCatalog.map((cat, idx) => (
                         <div key={idx}>
-                          <h4 className="text-xs font-bold text-stone-500 uppercase tracking-wide mb-2">{cat.category}</h4>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+                          <h4 className="text-[11px] font-bold text-stone-500 uppercase tracking-wider mb-2">{cat.category}</h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                             {cat.items.map((item) => (
                               <div
                                 key={item.id}
                                 onClick={() => toggleEquip(item.name, item.disabled)}
-                                className={`p-3 rounded-lg border text-sm flex items-start gap-2.5 cursor-pointer transition-all ${
+                                className={`p-3 rounded border text-xs flex items-start gap-2.5 transition-all ${
                                   item.disabled 
-                                    ? 'bg-stone-100 border-stone-200 opacity-60 cursor-not-allowed'
+                                    ? 'bg-[#EFECE6] border-stone-300 opacity-80 cursor-not-allowed'
                                     : selectedEquipments.includes(item.name)
-                                      ? 'bg-blue-50/60 border-[#1E4E68] shadow-sm'
-                                      : 'bg-white border-stone-200 hover:border-stone-300'
+                                      ? 'bg-blue-50/60 border-[#1E4E68] shadow-sm cursor-pointer'
+                                      : 'bg-[#FDFCFA] border-stone-200 hover:border-stone-300 cursor-pointer'
                                 }`}
                               >
                                 <input 
@@ -283,11 +267,13 @@
                                   className="mt-0.5 rounded text-[#1E4E68]"
                                 />
                                 <div>
-                                  <span className={`block font-medium ${item.disabled ? 'text-stone-500' : 'text-slate-800'}`}>
+                                  <span className={`block font-medium ${item.disabled ? 'text-stone-700' : 'text-slate-800'}`}>
                                     {item.name}
                                   </span>
-                                  {item.note && (
-                                    <span className="text-[11px] text-amber-700 block mt-0.5">{item.note}</span>
+                                  {item.disabled && (
+                                    <span className="text-[11px] text-[#8C5E28] block mt-1 leading-snug">
+                                      {item.note}
+                                    </span>
                                   )}
                                 </div>
                               </div>
@@ -301,20 +287,20 @@
                   {/* Ngày & Buổi */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Ngày sử dụng</label>
+                      <label className="block text-xs font-bold text-stone-700 mb-1">Ngày sử dụng</label>
                       <input 
                         type="date" 
                         value={formData.usageDate}
                         onChange={(e) => setFormData({...formData, usageDate: e.target.value})}
-                        className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                        className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-slate-700 mb-1">Buổi</label>
+                      <label className="block text-xs font-bold text-stone-700 mb-1">Buổi</label>
                       <select 
                         value={formData.shift}
                         onChange={(e) => setFormData({...formData, shift: e.target.value})}
-                        className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                        className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                       >
                         <option value="Sáng">Sáng</option>
                         <option value="Chiều">Chiều</option>
@@ -324,29 +310,31 @@
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 mb-1">Nội dung sử dụng</label>
+                    <label className="block text-xs font-bold text-stone-700 mb-1">Nội dung sử dụng</label>
                     <textarea 
                       rows="3"
                       placeholder="Bài thực hành, số sinh viên, địa điểm dùng thiết bị"
                       value={formData.purpose}
                       onChange={(e) => setFormData({...formData, purpose: e.target.value})}
-                      className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                      className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none focus:border-[#1E4E68]"
                     ></textarea>
                   </div>
 
-                  <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      checked={needAssistant}
-                      onChange={(e) => setNeedAssistant(e.target.checked)}
-                      className="rounded"
-                    />
-                    Cần trưởng xưởng hướng dẫn hoặc hỗ trợ kỹ thuật tại buổi dùng
-                  </label>
+                  <div className="p-3 border border-stone-200 rounded bg-[#FDFCFA]">
+                    <label className="flex items-center gap-2 text-xs text-stone-700 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={needAssistant}
+                        onChange={(e) => setNeedAssistant(e.target.checked)}
+                        className="rounded"
+                      />
+                      Cần trưởng xưởng hướng dẫn hoặc hỗ trợ kỹ thuật tại buổi dùng
+                    </label>
+                  </div>
 
                   <button 
                     type="submit"
-                    className="bg-[#1E4E68] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#163b4f] transition-all"
+                    className="bg-[#2B5B75] text-white px-5 py-2.5 rounded font-medium text-sm hover:bg-[#1E4357] transition-all"
                   >
                     Gửi đăng ký
                   </button>
@@ -355,137 +343,122 @@
 
               {/* Lịch đăng ký chung */}
               <div className="mt-12">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold font-serif text-slate-900">Lịch đăng ký chung</h3>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-xl font-bold font-serif text-[#142A38]">Lịch đăng ký chung</h3>
                   <button 
-                    onClick={() => alert('Đang xuất bảng lịch ra định dạng CSV...')}
-                    className="border border-stone-300 bg-white px-3 py-1.5 rounded text-xs font-medium text-slate-700 hover:bg-stone-50"
+                    onClick={() => alert('Xuất danh sách đăng ký mượn ra file CSV...')}
+                    className="border border-stone-300 bg-white px-3 py-1 rounded text-xs font-medium text-slate-700 hover:bg-stone-50"
                   >
                     Tải bảng CSV
                   </button>
                 </div>
 
-                <div className="bg-white border border-stone-200 rounded-xl overflow-hidden shadow-sm">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-stone-50 border-b border-stone-200 text-xs text-stone-500 uppercase">
-                      <tr>
-                        <th className="p-3">Giảng viên / Lớp</th>
-                        <th className="p-3">Học phần</th>
-                        <th className="p-3">Thời gian</th>
-                        <th className="p-3">Thiết bị mượn</th>
-                        <th className="p-3">Trạng thái</th>
-                        {role === 'admin' && <th className="p-3 text-right">Quản trị</th>}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-stone-100">
-                      {borrowHistory.map((item) => (
-                        <tr key={item.id} className="hover:bg-stone-50/50">
-                          <td className="p-3">
-                            <div className="font-semibold text-slate-800">{item.teacherName}</div>
-                            <div className="text-xs text-stone-500">{item.studentClass}</div>
-                          </td>
-                          <td className="p-3">{item.subject}</td>
-                          <td className="p-3">
-                            <div>{item.date}</div>
-                            <span className="text-xs bg-stone-100 px-1.5 py-0.5 rounded font-medium">{item.shift}</span>
-                          </td>
-                          <td className="p-3">
-                            <div className="flex flex-wrap gap-1">
-                              {item.equipments.map((eq, i) => (
-                                <span key={i} className="text-xs bg-blue-50 text-blue-800 px-2 py-0.5 rounded">
-                                  {eq}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-                          <td className="p-3">
-                            <span className={`text-xs px-2 py-1 rounded font-semibold ${
-                              item.status === 'Đã xác nhận' ? 'bg-emerald-100 text-emerald-800' :
-                              item.status === 'Từ chối' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
-                            }`}>
-                              {item.status}
-                            </span>
-                          </td>
-                          {role === 'admin' && (
-                            <td className="p-3 text-right space-x-1">
-                              <button 
-                                onClick={() => updateStatus(item.id, 'Đã xác nhận')}
-                                className="px-2 py-1 text-xs bg-emerald-600 text-white rounded hover:bg-emerald-700"
-                              >
-                                Duyệt
-                              </button>
-                              <button 
-                                onClick={() => updateStatus(item.id, 'Từ chối')}
-                                className="px-2 py-1 text-xs bg-rose-600 text-white rounded hover:bg-rose-700"
-                              >
-                                Từ chối
-                              </button>
-                              <button 
-                                onClick={() => deleteRecord(item.id)}
-                                className="px-2 py-1 text-xs bg-stone-200 text-stone-700 rounded hover:bg-stone-300"
-                              >
-                                Xóa
-                              </button>
-                            </td>
-                          )}
+                {borrowHistory.length === 0 ? (
+                  <div className="border border-dashed border-[#DDD6C8] bg-[#F7F4ED] rounded-lg p-6 text-center text-xs text-stone-500">
+                    Chưa có đăng ký nào. Đăng ký mới hiện ở đây để mọi người xem lịch dùng thiết bị.
+                  </div>
+                ) : (
+                  <div className="bg-white border border-stone-200 rounded-lg overflow-hidden shadow-sm">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-[#F7F4ED] border-b border-stone-200 text-stone-600 font-bold">
+                        <tr>
+                          <th className="p-3">Giảng viên / Lớp</th>
+                          <th className="p-3">Học phần</th>
+                          <th className="p-3">Thời gian</th>
+                          <th className="p-3">Thiết bị mượn</th>
+                          <th className="p-3">Trạng thái</th>
+                          {role === 'admin' && <th className="p-3 text-right">Thao tác</th>}
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody className="divide-y divide-stone-100">
+                        {borrowHistory.map((item) => (
+                          <tr key={item.id}>
+                            <td className="p-3 font-medium text-slate-800">
+                              {item.teacherName} {item.studentClass && `(${item.studentClass})`}
+                            </td>
+                            <td className="p-3">{item.subject}</td>
+                            <td className="p-3">{item.date} ({item.shift})</td>
+                            <td className="p-3">
+                              <span className="text-blue-900 bg-blue-50 px-2 py-0.5 rounded font-medium">
+                                {item.equipments.join(', ')}
+                              </span>
+                            </td>
+                            <td className="p-3 font-semibold text-amber-700">{item.status}</td>
+                            {role === 'admin' && (
+                              <td className="p-3 text-right space-x-1">
+                                <button 
+                                  onClick={() => setBorrowHistory(borrowHistory.map(b => b.id === item.id ? {...b, status: 'Đã xác nhận'} : b))}
+                                  className="px-2 py-1 bg-emerald-600 text-white rounded"
+                                >
+                                  Duyệt
+                                </button>
+                                <button 
+                                  onClick={() => setBorrowHistory(borrowHistory.filter(b => b.id !== item.id))}
+                                  className="px-2 py-1 bg-stone-200 text-stone-700 rounded"
+                                >
+                                  Xóa
+                                </button>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           {/* TAB 2: ĐỀ XUẤT MUA SẮM */}
           {activeTab === 'dexuat' && (
-            <form onSubmit={handleProposalSubmit} className="space-y-6 bg-white p-6 rounded-xl border border-stone-200 shadow-sm">
+            <form onSubmit={handleProposalSubmit} className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Họ tên giảng viên *</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Họ tên giảng viên</label>
                   <input 
                     type="text" 
                     required
                     value={propData.teacherName}
                     onChange={(e) => setPropData({...propData, teacherName: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Học phần liên quan *</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Học phần liên quan</label>
                   <input 
                     type="text" 
                     required
                     value={propData.subject}
                     onChange={(e) => setPropData({...propData, subject: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Thiết bị hoặc phần mềm đề xuất *</label>
+                <label className="block text-xs font-bold text-stone-700 mb-1">Thiết bị hoặc phần mềm đề xuất</label>
                 <input 
                   type="text" 
                   required
                   placeholder="Tên thiết bị, phần mềm hoặc học liệu"
                   value={propData.name}
                   onChange={(e) => setPropData({...propData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none mb-2"
+                  className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none mb-2"
                 />
                 
-                {/* Gợi ý nhanh */}
+                {/* Các nút bấm chọn nhanh */}
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {[
                     'Máy in 3D', 'PC cấu hình rất cao', 'Kính thực tế ảo (VR)', 'Máy in A3 và photocopy', 
                     'Máy scan 3D cầm tay', 'Máy GPS cầm tay', 'Phần mềm GIS (QGIS, ArcGIS)', 
-                    'Phần mềm Ladybug, ClimateStudio', 'Bàn đo bóng nắng Heliodon'
+                    'Phần mềm Ladybug, ClimateStudio', 'Máy đo độ rọi (Lux meter)', 'Bàn đo bóng nắng Heliodon'
                   ].map((sug, i) => (
                     <button
                       key={i}
                       type="button"
                       onClick={() => setPropData({...propData, name: sug})}
-                      className="text-xs bg-stone-100 hover:bg-stone-200 text-stone-700 px-2.5 py-1 rounded-full border border-stone-200"
+                      className="text-xs bg-[#EFECE6] hover:bg-[#E5E1D8] text-stone-700 px-2.5 py-1 rounded border border-stone-300 transition-colors"
                     >
                       {sug}
                     </button>
@@ -495,26 +468,26 @@
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Loại</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Loại</label>
                   <select 
                     value={propData.category}
                     onChange={(e) => setPropData({...propData, category: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   >
                     <option value="Thiết bị">Thiết bị</option>
-                    <option value="Phần mềm">Phần mềm bản quyền</option>
-                    <option value="Học liệu / Khác">Học liệu / Khác</option>
+                    <option value="Phần mềm">Phần mềm</option>
+                    <option value="Khác">Khác</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Mức ưu tiên</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Mức ưu tiên</label>
                   <select 
                     value={propData.priority}
                     onChange={(e) => setPropData({...propData, priority: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   >
-                    <option value="Cao">Cao</option>
                     <option value="Trung bình">Trung bình</option>
+                    <option value="Cao">Cao</option>
                     <option value="Thấp">Thấp</option>
                   </select>
                 </div>
@@ -522,51 +495,51 @@
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Số lượng</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Số lượng</label>
                   <input 
                     type="number" 
                     min="1"
                     value={propData.quantity}
                     onChange={(e) => setPropData({...propData, quantity: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1">Giá tham khảo (nếu có)</label>
+                  <label className="block text-xs font-bold text-stone-700 mb-1">Giá tham khảo (nếu có)</label>
                   <input 
                     type="text" 
                     placeholder="Ví dụ: 25 triệu đồng"
                     value={propData.price}
                     onChange={(e) => setPropData({...propData, price: e.target.value})}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                    className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Lý do và nội dung giảng dạy sử dụng</label>
+                <label className="block text-xs font-bold text-stone-700 mb-1">Lý do và nội dung giảng dạy sử dụng</label>
                 <textarea 
                   rows="3"
                   placeholder="Thiết bị hỗ trợ bài tập hoặc nội dung nào của học phần"
                   value={propData.reason}
                   onChange={(e) => setPropData({...propData, reason: e.target.value})}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                  className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                 ></textarea>
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Đường dẫn sản phẩm hoặc thông số (nếu có)</label>
+                <label className="block text-xs font-bold text-stone-700 mb-1">Đường dẫn sản phẩm hoặc thông số (nếu có)</label>
                 <input 
                   type="url" 
                   value={propData.url}
                   onChange={(e) => setPropData({...propData, url: e.target.value})}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-md outline-none"
+                  className="w-full px-3 py-2 border border-stone-300 rounded bg-[#FDFCFA] text-sm outline-none"
                 />
               </div>
 
               <button 
                 type="submit"
-                className="bg-[#1E4E68] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[#163b4f] transition-all"
+                className="bg-[#2B5B75] text-white px-5 py-2.5 rounded font-medium text-sm hover:bg-[#1E4357] transition-all"
               >
                 Gửi đề xuất
               </button>
@@ -576,7 +549,6 @@
       );
     }
 
-    // Render ra màn hình
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<ArchitectureEquipmentSystem />);
   </script>
