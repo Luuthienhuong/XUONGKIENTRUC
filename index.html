@@ -20,18 +20,16 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // Đường link API Google Apps Script của bạn
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxE-bwKsSpArJe3TLrHjevmYX_uEISwUlDQmJ_5exoSqSAZFWgjgy2My75JMHHvXfKfwA/exec";
 
     function ArchitectureEquipmentSystem() {
       const [activeTab, setActiveTab] = useState('muon');
-      const [role, setRole] = useState('giang_vien');
+      const [role, setRole] = useState('admin'); // Mặc định ở quyền Quản trị viên để hiển thị các nút thao tác
       const [selectedEquipments, setSelectedEquipments] = useState([]);
       const [needAssistant, setNeedAssistant] = useState(false);
       const [isSubmitting, setIsSubmitting] = useState(false);
       const [isLoadingHistory, setIsLoadingHistory] = useState(true);
 
-      // Danh mục chuẩn của Xưởng Kiến Trúc
       const [equipmentCatalog] = useState([
         {
           category: 'CHẾ TÁC VÀ MÔ HÌNH',
@@ -89,7 +87,6 @@
         url: ''
       });
 
-      // Tải dữ liệu từ Google Sheets
       const fetchHistory = () => {
         setIsLoadingHistory(true);
         fetch(GOOGLE_SCRIPT_URL)
@@ -101,7 +98,7 @@
             setIsLoadingHistory(false);
           })
           .catch(err => {
-            console.log("Lỗi tải lịch đăng ký:", err);
+            console.log("Lỗi tải dữ liệu:", err);
             setIsLoadingHistory(false);
           });
       };
@@ -119,7 +116,6 @@
         }
       };
 
-      // Xử lý gửi đăng ký mượn thiết bị
       const handleBorrowSubmit = async (e) => {
         e.preventDefault();
         if (role === 'sinh_vien') {
@@ -132,7 +128,6 @@
         }
 
         setIsSubmitting(true);
-
         const payload = {
           type: 'Đăng ký mượn',
           teacherName: formData.teacherName,
@@ -153,25 +148,18 @@
             body: JSON.stringify(payload)
           });
 
-          alert('Đăng ký thành công! Đã gửi thông báo đến Email UTE của Quản lý xưởng và ghi vào Google Sheets.');
+          alert('Đăng ký thành công! Đã gửi thông báo đến Email UTE của Quản lý xưởng.');
           setSelectedEquipments([]);
-          setFormData({
-            ...formData,
-            purpose: ''
-          });
+          setFormData({ ...formData, purpose: '' });
           setNeedAssistant(false);
-          // Tải lại bảng sau 1.5 giây
-          setTimeout(() => {
-            fetchHistory();
-          }, 1500);
+          setTimeout(fetchHistory, 1500);
         } catch (err) {
-          alert('Có lỗi xảy ra khi kết nối máy chủ. Vui lòng thử lại!');
+          alert('Có lỗi kết nối máy chủ.');
         } finally {
           setIsSubmitting(false);
         }
       };
 
-      // Xử lý gửi đề xuất mua sắm
       const handleProposalSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -191,37 +179,46 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
           });
-
           alert('Đã gửi đề xuất mua sắm thành công và thông báo qua Email UTE!');
           setPropData({
-            teacherName: '',
-            subject: '',
-            name: '',
-            category: 'Thiết bị',
-            priority: 'Trung bình',
-            quantity: 1,
-            price: '',
-            reason: '',
-            url: ''
+            teacherName: '', subject: '', name: '', category: 'Thiết bị',
+            priority: 'Trung bình', quantity: 1, price: '', reason: '', url: ''
           });
         } catch (err) {
-          alert('Có lỗi xảy ra khi gửi đề xuất.');
+          alert('Có lỗi gửi dữ liệu.');
         } finally {
           setIsSubmitting(false);
         }
       };
 
-      // Hàm tải bảng CSV
+      // Xử lý nút bấm Xác nhận / Từ chối dành riêng cho Quản trị viên
+      const handleStatusChange = async (id, newStatus) => {
+        // Cập nhật giao diện ngay lập tức
+        setBorrowHistory(borrowHistory.map(item => item.id === id ? { ...item, status: newStatus } : item));
+        
+        // Gửi lệnh đồng bộ về Google Sheets
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'update_status', id: id, newStatus: newStatus })
+          });
+        } catch (e) {
+          console.log("Lỗi đồng bộ trạng thái");
+        }
+      };
+
       const downloadCSV = () => {
         if (borrowHistory.length === 0) {
-          alert('Hiện tại chưa có dữ liệu để tải về.');
+          alert('Chưa có dữ liệu để tải về.');
           return;
         }
         let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
-        csvContent += "Giang vien,Lop,Hoc phan,Thoi gian,Buoi,Thiet bi muon,Ghi chu,Ho tro ky thuat\n";
+        csvContent += "Giang vien,Lop,Hoc phan,Thoi gian,Buoi,Thiet bi muon,Trang thai\n";
         borrowHistory.forEach(row => {
           const eq = Array.isArray(row.equipments) ? row.equipments.join('; ') : (row.equipments || '');
-          csvContent += `"${row.teacherName || ''}","${row.studentClass || ''}","${row.subject || ''}","${row.date || ''}","${row.shift || ''}","${eq}","${row.purpose || ''}","${row.needAssistant || ''}"\n`;
+          csvContent += `"${row.teacherName || ''}","${row.studentClass || ''}","${row.subject || ''}","${row.date || ''}","${row.shift || ''}","${eq}","${row.status || ''}"\n`;
         });
         const encodedUri = encodeURI(csvContent);
         const link = document.createElement("a");
@@ -234,7 +231,7 @@
 
       return (
         <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          {/* Header */}
+          {/* Tiêu đề & Vai trò */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-5 border-b border-[#E6E1D8] gap-4">
             <div>
               <p className="text-[11px] tracking-widest font-semibold text-stone-500 uppercase">
@@ -246,14 +243,13 @@
               <p className="text-stone-600 text-sm mt-1">
                 Giảng viên đăng ký lịch dùng thiết bị trước mỗi buổi thực hành, hoặc gửi gợi ý thiết bị, phần mềm cần mua cho học phần của mình.
               </p>
-              <p className="text-xs text-stone-400 mt-2">
+              <p className="text-xs text-[#1E4E68] font-medium mt-2">
                 {role === 'admin' 
-                  ? 'Bạn đang xem với quyền quản lý: có nút Xác nhận, Từ chối, Xóa và tải CSV.' 
+                  ? '✓ Bạn đang xem với quyền quản lý: có nút Xác nhận, Từ chối và tải CSV.' 
                   : 'Bạn đang xem với quyền đăng ký học phần.'}
               </p>
             </div>
 
-            {/* Phân quyền */}
             <div className="bg-[#F3EFE6] border border-[#DDD6C8] rounded-lg p-2 text-xs">
               <span className="font-semibold block text-stone-700 mb-1">Chế độ người dùng:</span>
               <select 
@@ -261,14 +257,14 @@
                 onChange={(e) => setRole(e.target.value)}
                 className="bg-white border border-stone-300 rounded px-2 py-1 font-medium text-slate-700 outline-none"
               >
+                <option value="admin">Quản trị viên (Hiện nút Xác nhận/Từ chối)</option>
                 <option value="giang_vien">Giảng viên (Được đăng ký)</option>
-                <option value="admin">Quản trị viên (Xem toàn quyền)</option>
                 <option value="sinh_vien">Sinh viên (Chỉ xem lịch)</option>
               </select>
             </div>
           </div>
 
-          {/* Tabs chuyển trang */}
+          {/* Tab chọn */}
           <div className="flex gap-8 border-b border-[#E6E1D8] mt-4 mb-7 text-sm font-semibold">
             <button
               onClick={() => setActiveTab('muon')}
@@ -328,7 +324,6 @@
                     />
                   </div>
 
-                  {/* Thiết bị cần dùng */}
                   <div>
                     <label className="block text-xs font-bold text-stone-700 mb-1">
                       Thiết bị cần dùng <span className="font-normal text-stone-500">(chọn một hoặc nhiều)</span>
@@ -379,7 +374,6 @@
                     </div>
                   </div>
 
-                  {/* Ngày & Buổi */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-bold text-stone-700 mb-1">Ngày sử dụng</label>
@@ -432,12 +426,12 @@
                     disabled={isSubmitting}
                     className="bg-[#2B5B75] text-white px-5 py-2.5 rounded font-medium text-sm hover:bg-[#1E4357] transition-all disabled:opacity-50"
                   >
-                    {isSubmitting ? 'Đang gửi và chuyển tiếp email UTE...' : 'Gửi đăng ký'}
+                    {isSubmitting ? 'Đang gửi...' : 'Gửi đăng ký'}
                   </button>
                 </form>
               )}
 
-              {/* Lịch đăng ký chung */}
+              {/* LỊCH ĐĂNG KÝ VÀ CÁC NÚT THAO TÁC CỦA QUẢN LÝ */}
               <div className="mt-12">
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-xl font-bold font-serif text-[#142A38]">Lịch đăng ký chung (Thời gian thực)</h3>
@@ -446,7 +440,7 @@
                       onClick={fetchHistory}
                       className="border border-stone-300 bg-white px-3 py-1 rounded text-xs font-medium text-slate-700 hover:bg-stone-50"
                     >
-                      Làm mới dữ liệu
+                      Làm mới
                     </button>
                     <button 
                       onClick={downloadCSV}
@@ -461,7 +455,7 @@
                   <div className="p-6 text-center text-xs text-stone-500">Đang đồng bộ dữ liệu từ Google Sheets...</div>
                 ) : borrowHistory.length === 0 ? (
                   <div className="border border-dashed border-[#DDD6C8] bg-[#F7F4ED] rounded-lg p-6 text-center text-xs text-stone-500">
-                    Chưa có đăng ký nào. Đăng ký mới của các thầy cô sẽ hiển thị trực tiếp tại đây.
+                    Chưa có đăng ký nào. Các đăng ký mới của giảng viên sẽ được hiển thị trực tiếp tại đây.
                   </div>
                 ) : (
                   <div className="bg-white border border-stone-200 rounded-lg overflow-hidden shadow-sm">
@@ -473,6 +467,7 @@
                           <th className="p-3">Thời gian</th>
                           <th className="p-3">Thiết bị mượn</th>
                           <th className="p-3">Trạng thái</th>
+                          {role === 'admin' && <th className="p-3 text-right">Quản lý duyệt</th>}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-stone-100">
@@ -489,10 +484,34 @@
                               </span>
                             </td>
                             <td className="p-3">
-                              <span className="text-xs px-2 py-0.5 rounded font-semibold bg-emerald-100 text-emerald-800">
-                                {item.status || 'Đã ghi nhận'}
+                              <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
+                                item.status === 'Đã duyệt' || item.status === 'Đã xác nhận' 
+                                  ? 'bg-emerald-100 text-emerald-800' 
+                                  : item.status === 'Từ chối'
+                                    ? 'bg-rose-100 text-rose-800'
+                                    : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {item.status || 'Chờ duyệt'}
                               </span>
                             </td>
+
+                            {/* CỘT CÁC NÚT XÁC NHẬN / TỪ CHỐI CHO ADMIN */}
+                            {role === 'admin' && (
+                              <td className="p-3 text-right space-x-1 whitespace-nowrap">
+                                <button 
+                                  onClick={() => handleStatusChange(item.id, 'Đã xác nhận')}
+                                  className="px-2 py-1 bg-emerald-600 text-white rounded text-[11px] font-medium hover:bg-emerald-700"
+                                >
+                                  Xác nhận
+                                </button>
+                                <button 
+                                  onClick={() => handleStatusChange(item.id, 'Từ chối')}
+                                  className="px-2 py-1 bg-rose-600 text-white rounded text-[11px] font-medium hover:bg-rose-700"
+                                >
+                                  Từ chối
+                                </button>
+                              </td>
+                            )}
                           </tr>
                         ))}
                       </tbody>
